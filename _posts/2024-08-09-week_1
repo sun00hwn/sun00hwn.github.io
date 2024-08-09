@@ -4,23 +4,23 @@ title:  "Pytorch"
 ---
 
 
-# Data 타입
+## Data 타입
    
 ```python
   dtype = torch.int32 or torch.int 
   dtype = torch.float32 or torch.float
 ```
 
-# 기초 문법
+## 기초 문법
 
-```
+```pytorch
 torch.min(), max() # min, max, sum, prod, mean, var, std 다 지원함
 dim() # 차원
 size(), shape() # 크기
 x.numel() # Tensor에 있는 요소의 총 개수 확인
 ```
 
-# Tensor 생성
+## Tensor 생성
 
 ```pytorch
 torch.rand(n) # 특정 크기의 연속균등분포 난수
@@ -35,7 +35,7 @@ z = x.detach() # clone 과 다른점: 계산그래프에서 분리하여 새로�
 
 ## device
 
-```
+```pytorch
 a.device # 현재 디바이스
 torch.cuda.is_avilable() # CUDA를 사용할 수 있는 환경인지 확인
 torch.cuda.device_count() # 사용 가능한 GPU 개수
@@ -43,15 +43,15 @@ torch.cuda.get_device_name(device=0) # cuda device name 확인
 torch.tensor().to(device='cuda') or torch.tensor().cuda()
 ```
 
-# indexing & slicing
+## indexing & slicing
 
-indexing : TEnsor의 특정위치의 요소에 접근하는 것
+indexing : Tensor의 특정위치의 요소에 접근하는 것
 slicing : 부분집합을 선택해 새로운 Sub Tensor 생성하는 과정
 
 
-# Tensor 모양 변경
+## Tensor 모양 변경
 
-```
+```pytorch
 연속적 메모리 할당의 이해
 view() 와 reshape() 의 차이 이해
 is_contiguous() # 메모리의 연속성 확인
