@@ -5,7 +5,7 @@ title:  "Pytorch"
 
 
 ## Data 타입
-   
+### Data 타입   
 ```python
   dtype = torch.int32 or torch.int 
   dtype = torch.float32 or torch.float
@@ -59,4 +59,25 @@ flatten()  # 전처리를 위한 평탄화
 transpose() # 특정 두 차원의 축을 뒤바꿈
 squeeze() & unsqeeze() # 차원 축소 확장
 stack() # Tensor들 간의 결합
+```
+
+## Tensor 산술연산
+```python
+a.add_(b) # inplace 방식
+torch.sub(f,e) # mul, pow,
+torch.eq(v,w) # 결과는 Boolean Tensor로 출력 # ne, ge, lt, le
+logical_and(a,b)  # 논리곱(and) 논리합(or) 배타적 논리합(XOR) 이해
+```
+
+## 노름에대한 이해,활용 Tensor의 행렬곱
+```
+### 1-D Tensor의 노름 이해
+# L1(맨해튼), L2(유클리드), L∞ 이해
+torch.norm(a, p=2), norm(a, p=float('inf'))
+
+# 맨해튼, 유클리드, 코사인 유사도
+cosine_similarity = torch.dot(b,c) / (torch.norm(b, p=2)) * (torch.norm(c, p=2))
+
+# 2-D Tensor 행렬 곱셈  A.matmul(B) or mm or @
+# 행렬 곱을 응용한 대칭 이동 수행
 ```
