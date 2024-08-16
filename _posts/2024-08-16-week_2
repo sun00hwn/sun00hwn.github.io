@@ -3,5 +3,233 @@ layout: single
 title:  "주간학습정리 ML LifeCycle"
 ---
 
+## Backpropagation
 
-### Backpropagation
+- [역전파는 손실 함수](https://en.wikipedia.org/wiki/Loss_function) 에 대한 피드포워드 신경망의 [가중치 공간](https://en.wikipedia.org/wiki/Parameter_space) 에서 그래디언트를 계산합니다 .
+
+<img src="https://serokell.io/files/a0/a05ov1m.Backpropagation_in_NN_pic1.jpg" alt="What is backpropagation in neural networks?" style="zoom: 50%;" />
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273101752593285170/image.png?ex=66bf5e26&is=66be0ca6&hm=643fff10e6337eadb4b2e4343c97095528f389de22e6bbdb8a75e88016195ee8&" alt="img" style="zoom:50%;" />
+
+## 활성화 함수(activation function) 단점
+
+1. ####  Sigmoid Functions: 기울기 소실문제(Vanishing Gradient)
+
+   - sigmoid는 1과 0사이의 값으로 나오기 때문에 입력 값이 크거나 작을때 기울기가 0이 됨
+
+     <img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273117253633704057/image.png?ex=66bf6c96&is=66be1b16&hm=6d9a06c864496f75df5709ac1b996a991a9ae68eed409e238a070340b210e2bf&" alt="img" style="zoom:67%;" />
+
+     
+
+2. #### Not Zero-centered Output
+
+- 입력 x가 모두 양수일때 sigmoid를 w(입력파라메터) 에 대해 미분했을때 항상 양수가 나옴.
+
+- upstream gradient 의 부호에따라 모든 그레디언트들은 모두 양수이거나 모두 음수이다.
+
+- gradient가 특정 방향으로(양수 or 음수)만 업데이트가 된다.
+
+- exp() 계산이 어렵다
+
+![img](https://cdn.discordapp.com/attachments/1269888098188394518/1273109296347091004/image.png?ex=66bf652d&is=66be13ad&hm=27b41712e889634a5ed38f5a01260e9ae736d4d370198d73192d0b1c6194dfb8&)
+
+
+
+### Tanh Functions 
+
+- 특징 (Zero_centered)  , 출력 값의 범위 : [-1, 1]
+
+- 여전히 기울기소실문제(Vanishing Gradient) 발생
+
+- 커진 sigmoid 뉴런과 비슷함.
+
+<img src="https://production-media.paperswithcode.com/methods/Screen_Shot_2020-05-27_at_4.23.22_PM_dcuMBJl.png" alt="Tanh Activation Explained | Papers With Code" style="zoom: 50%;" />
+
+### ReLU (Rectified Linear Unit)
+
+$$
+ReLU(x) = max(0,x)
+$$
+
+> ##### 특징
+
++ 영역에서 saturate 되지 않음
++ 연산이 효율적임
++ sigmoid나 tanh 보다 발리 수렴함
++ 기울기 소실문제(Vanishing Gradient)가 없음
+
+> ##### 단점
+
+- 출력 값이 zero_centered 되지 않는다.
+- Dead ReLU problem: 출력 값이 음수라면 saturated 되는 문제가 발생
+- x = 0 일때 미분 불가능
+- 음수 입력의 경우 기울기가 0이 되어, 해당 뉴런이 학습되지 않을 수 있습니다. 이를 "dying ReLU" 문제라고 합니다.
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273115941126799434/image.png?ex=66bf6b5d&is=66be19dd&hm=de568ec28b3e241b5b71ba1369b8c65b18b52795ea50417febbd190da5f99bb7&" alt="img" style="zoom: 50%;" />
+
+### Leaky ReLU
+
+> ##### 특징
+
+- ReLU와 같으나 No Dead ReLU 문제: 기울기 소실(Vanishing Gradient)이 되지 않는다
+
+
+> ##### 단점
+
+- 추가적인 하이퍼파라미터 (x가 0 미만일 때의 기울기)
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273118024647573525/image.png?ex=66bf6d4e&is=66be1bce&hm=476ec0ed39ff1bd57b30fcc9e6a68637d916bd91b206511cc47d09588e6bea5d&" alt="img" style="zoom:50%;" />
+
+### ELU (Exponential Linear Unit)
+
+> ##### 특징
+
+- ReLU의 모든 장점
+
+- (Leaky) ReLU에 비해 saturated된 음수 지역은 견고성을 더한다.
+
+> ##### 단점
+
+- exp() 의 연산이 비쌈 (Exponential  미분 복잡)
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273118600303087733/image.png?ex=66bf6dd7&is=66be1c57&hm=7f088d9bde3c61d9205631329580e8d47d5070fc9d8a974d392072a01955edce&" alt="img" style="zoom:50%;" />
+
+## Weight initialization
+
+1. ### Small Gaussian Random
+
+   ```python
+   W = 0.01 * np.random.randn(d_in, d_out)
+   x = np.tanh(x.dot(W))
+   ```
+
+   - For deeper network 에서 w의 값을 작은값으로하면 x ≈ 0 일 때, 모든 기울기가 0에 가까워져 학습이 되지 않음 (얕은 신경망에서는 좋은 결과를 냄)
+
+     
+
+2. ### Large Gaussian Rand
+
+   ```python
+   W = 0.5 * np.random.randn(d_in, d_out)
+   x = np.tanh(x.dot(W))
+   ```
+
+   - For deeper network 에서 극단 값으로 밀려남
+
+     
+
+3. ### Xavier initialization
+
+   <img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273515697783312404/image.png?ex=66bf8e2b&is=66be3cab&hm=439a541c0bdb01ba8d8c46eb684378c5ff5c1f1541139f1f52d657fc72ad090f&" alt="img" style="zoom: 80%;" />
+
+   - Sigmoid나 Tanh 활성화 함수를 사용할 때 적합하며, 입력과 출력의 노드 수를 고려하여 분산을 설정합니다.
+
+   ```python
+   W = np.random.randn(d_in, d_out) / np.sqrt(d_in + d_out)
+   x = np.tanh(x.dot(W))
+   ```
+
+   - 모든 레이어들에 대해서 activation이 적당한 크기를 가짐
+
+4. He Initialization 
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273515414504083466/image.png?ex=66bf8de7&is=66be3c67&hm=a5b49422e664ae8d1434c488f297577708192579fe4eca446db8dbfea6ec6621&" alt="img" style="zoom:80%;" />
+
+> 앞이 평균, 뒤가 분산
+
+- ReLU는 양수일 때만 기울기가 살아 있기 때문에, '더 큰 분산'을 필요로 하며, 이는 뉴런의 활성화가 더 잘 발생하도록 돕습니다.
+
+
+
+## Learning Rate Scheduling
+
+- 매우 높은 학습률: loss가 급중할 수 있음
+- 매우 낮은 학습률: loss는 줄어들지만 매우 천천히 움직임
+- Learning Rate Decay : 처음에 큰 학습률을 사용하다 최적의 해에 접근하기 위해서 점점 작은 학습률을 사용함.
+- Learning Rate Decay 같은 여러 기법과 경험을 통해 최적의 학습률을 찾는게 중요함
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273122324857487380/image.png?ex=66bf714f&is=66be1fcf&hm=14ec1e693986a0b9496ec7b1cf80e5b8559896ee58e6d78fbb51e56bddaf97a7&" alt="img" style="zoom:50%;" />
+
+## Data Preprocessing
+
+### Zero-centering & Normalization
+
+```python
+X -= np.mean(X, axis=0) # Zero-centering
+X /= np.std(X, axis=0) # Normalization
+```
+
+### why zero_centering
+
+- weight의 작은 변화에 덜 민감해집니다
+- optimize하기 쉬워진다
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273146860093308938/image.png?ex=66bf8829&is=66be36a9&hm=508479bc9b716cbb13bc473a33175fcfa4c8f0c479e2c8e5ad165ca2508f3eff&" alt="img" style="zoom: 50%;" />
+
+### PCA(Principal Component Analysis) 주성분 분석
+
+- 고차원 데이터 집합이 주어졌을 때 원래의 고차원 데이터와 가장 비슷하면서 더 낮은 차원 데이터를 찾아내는 방법 (차원 축소 라고도 함)
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273148832317964310/principal-component-analysis-pca-featured.png?ex=66bf89ff&is=66be387f&hm=c477b62cfe64452ce9084812d40db041429089f84f4e059fdd6644118d3d5aa6&" alt="img" style="zoom:33%;" />
+
+### Whitening
+
+- 화이트닝 연산은 고유기저의 데이터를 가져와 모든 차원을 고유값으로 나누어 스케일을 정규화합니다.
+
+- original data: 2차원 입력데이터
+
+- decorrelated data: PCA를 수행한 후. 데이터는 0에 중심을 맞춘 다음 데이터 공분산 행렬의 고유 기저로 회전합니다. 이렇게 하면 데이터가 비상관화됩니다(공분산 행렬이 대각선이 됨).
+
+- whitened data:  차원은 고유값에 의해 추가로 조정되어 데이터 공분산 행렬이 단위 행렬로 변환됩니다. 기하학적으로 이는 데이터를 등방성 가우스 블롭으로 늘리고 압축하는 것과 같습니다.
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273150870367764521/preprocessing-2.png?ex=66bf8be5&is=66be3a65&hm=65092ccc5100e542b41a5c25cf84ef46e11c54fa38d524d892efc65fa84298d1&" alt="img" style="zoom: 50%;" />
+
+### Data Augmentation
+- ML 모델은 초기 훈련 시에는 크고 다양한 데이터 세트를 필요로 하지만, 데이터 사일로, 관련 규정 및 기타 제한으로 인해 충분한 다양성을 갖춘 실제 데이터 세트를 소싱하기가 어려울 수 있습니다.
+- 데이터 증강은 원본 데이터를 약간 변경하여 데이터 세트를 인위적으로 늘립니다.
+
+### Why Data Augmentation
+- 모델 성능 향상
+- 데이터 의존성 감소
+- 훈련 데이터의 과적합 완화
+- 데이터 프라이버시 개선 (기존 데이터에 증강 기법을 적용하여 합성 데이터를 생성)
+
+------
+
+
+
+## RNN(Recurrent Neural Network)
+- 시계열 데이터를 처리하기 위한 모델
+- RNN은 은닉층의 노드에서 활성화 함수를 통해 나온 결과값을 출력층 방향으로도 보내면서, 다시 은닉층 노드의 다음 계산의 입력으로 보내는 특징을 갖고있습니다.
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273544945927458899/image.png?ex=66bfa968&is=66be57e8&hm=bda9c16aeef3d62ebfb6b2f131ed2a97658cfa085687903a2421c657a7c5a8c2&" alt="img" style="zoom: 67%;" />
+
+### RNN 장점
+- 가변적인길이의 input sequence를 처리할 수 있음
+- 입력이 많아져도 모델의 크기는 증가하지 않음
+- 모든 단계에서의 동일한 가중치 사용
+
+### RNN 단점
+- 병렬화가 어려움 - 느림
+
+- 기울기 폭발(exploding Gradient)
+
+- 기울기 소실(Vanashing Gradient)
+
+  <img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273556596638613545/image.png?ex=66bfb442&is=66be62c2&hm=fe630e3c520e00134c7b39274342dd3f71873826622db4c1b862b6a162298f63&" alt="img" style="zoom:67%;" />
+
+  <img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273556617895350293/image.png?ex=66bfb447&is=66be62c7&hm=ea9f77329da983342aa0668b2fee9b0b85b4d93376362522b7962042b8a69c51&" alt="img" style="zoom:67%;" />
+
+  <img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273556644965519443/image.png?ex=66bfb44d&is=66be62cd&hm=15f3c226d8b44db91877cb243f8d6030f543b857c53a615333d708649ee32d15&" alt="img" style="zoom:67%;" />
+
+  <img src="https://cdn.discordapp.com/attachments/1269888098188394518/1273556787399884840/image.png?ex=66bfb46f&is=66be62ef&hm=19d87a18319debfe6652a48355c3ff57b58dd44b3154342404cc3bbf0e7373c2&" alt="img" style="zoom: 67%;" />
+
+------
+
+# 추후 추가 예정
+
+## LSTM, GRU
+
+## Atention
+
+## Transformers
