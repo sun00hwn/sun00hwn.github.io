@@ -226,10 +226,104 @@ X /= np.std(X, axis=0) # Normalization
 
 ------
 
-# 추후 추가 예정
+## LSTM
 
-## LSTM, GRU
+- Cell State
+
+  정보가 전혀 바뀌지 않고 그대로만 흐르게 하는 부분
+
+- Forget Gate
+
+  이 Gate는 과거의 정보를 버릴지 말지 결정하는 과정입니다. 이 결정은 Sigmoid layer에 의해서 결정이 됩니다. 
+
+- Input Gate
+
+   Input Gate는 현재 정보를 기억하기 위한 게이트 입니다. 현재의 Cell state 값에 얼마나 더할지 말지를 정하는 역할
+
+- Update
+
+  과거 Cell State를 새로운 State로 업데이트 하는 과정입니다.
+
+- Output Gate
+
+  어떤 출력값을 출력할지 결정하는 과정으로 최종적으로 얻어진 Cell State 값을 얼마나 빼낼지 결정하는 역할
+
+<img src="https://wikidocs.net/images/page/152773/2.JPG" alt="img" style="zoom: 67%;" />
+
+## GRU
+
+- LSTM에서 은닉 상태를 업데이트하는 계산을 줄임. 업데이트, 리셋 게이트만 존재
 
 ## Atention
 
+`Attention(Q, K, V) = Attention Value`
+
+<img src="https://cdn.discordapp.com/attachments/1269888098188394518/1274904282021367850/image.png?ex=66c3f2a3&is=66c2a123&hm=3bf126825b9f2c2cdbf0a768083e39dfefee934c9f1b9387634fa737f37e25e6&" alt="img" style="zoom: 33%;" /><img src="https://cdn.discordapp.com/attachments/1269888098188394518/1274904776265568347/image.png?ex=66c3f319&is=66c2a199&hm=e4a0059b186db414f492f056967acfcb27bd4f998dd3e1434852ac67f709821c&" alt="img" style="zoom: 33%;" />
+$$
+입력 시퀀스 = x_1,x_2,x_3,...,x_n \\ h_i = W_h⋅x_i \\ \\
+Q_i = W_Q⋅h_i \\ K_i = W_k⋅h_i \\ V_i=W_v⋅h_i
+$$
+
+$$
+score_{1i} = Q_1K_i \\ 
+α_{1i} = Softmax(score_{1i}) \\
+z_1 = \sum α_{1i} V_i \\
+output = W_o ⋅ z_1
+$$
+
+
 ## Transformers
+
+
+
+- ##### 포지셔널 인코딩(Positional Encoding)
+
+> 트랜스포머는 단어의 위치 정보를 얻기 위해서 각 단어의 임베딩 벡터에 위치 정보들을 더하여 모델의 입력으로 사용하는데, 이를 포지셔널 인코딩(positional encoding)이라고 합니다.
+
+<img src="https://wikidocs.net/images/page/31379/transformer6_final.PNG" alt="img"  <img src="https://kikaben.com/transformers-positional-encoding/images/pos-encoding-plus-word-embedding.png" alt="KiKaBeN - Transformer's Positional Encoding" style="zoom: 50%;" />
+
+
+
+> 트랜스포머는 사인 함수와 코사인 함수의 값을 임베딩 벡터에 더해주므로서 단어의 순서 정보를 더하여 줍니다.
+
+$$
+PE_{(pos, 2i)} = sin(pos/10000^{2i/d_{model}}) \\
+PE_{(pos, 2i+1)} = cos(pos/10000^{2i/d_{model}})
+$$
+
+
+
+임베딩 벡터 내의 각 차원의 인덱스가 짝수인 경우에는 사인 함수의 값을 사용하고 홀수인 경우에는 코사인 함수의 값을 사용합니다.
+
+
+
+- ##### 멀티 헤드 어텐션(Multi-head Attention)
+
+  **어텐션 (Attention)**: 일반적인 어텐션 메커니즘은 두 개의 다른 시퀀스 사이의 연관성을 계산함.
+
+  **셀프 어텐션 (Self-Attention)**: 셀프 어텐션은 **동일한 시퀀스 내**에서 각 요소가 **다른 모든 요소들**과의 연관성을 계산함
+
+<img src="https://gaussian37.github.io/assets/img/dl/concept/transformer/0.png" alt="Transformer 모델 (Attention is all you need) - gaussian37" style="zoom:50%;" />
+
+- ##### 잔차 연결(Residual connection) 	
+
+$$
+H(x) = x + Multi　head　Attention(x)
+$$
+
+<img src="../images/2024-08-16-week_2/image-20240819205140234.png" alt="image-20240819205140234" style="zoom:67%;" />
+
+- ##### Layer Normalization
+
+$$
+LN = LayerNorm(x+Sublayer(x))
+$$
+
+층 정규화는 **텐서의 마지막 차원**에 대해서 평균과 분산을 구하고, 이를 가지고 어떤 수식을 통해 값을 정규화하여 학습을 돕습니다. 
+
+![img](https://wikidocs.net/images/page/31379/layer_norm_new_1_final.PNG)
+
+층 정규화를 위해서 우선, 화살표 방향으로 각각 평균 μ과 분산 σ2을 구해야 한다.
+$$
+ln_i = LayerNorm(x_i)
+$$
